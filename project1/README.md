@@ -1,5 +1,5 @@
 #####################################################################
-# Project2
+# Project1
 # Handout files for students
 #
 # Copyright (c) 2002, 2010 R. Bryant and D. O'Hallaron,
