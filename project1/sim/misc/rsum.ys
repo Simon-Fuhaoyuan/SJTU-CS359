@@ -1,0 +1,48 @@
+# rsum function
+# Haoyuan Fu 517021910753
+# Execution begins at address 0
+	.pos 0
+init:	irmovl Stack, %esp  	# Set up Stack pointer
+	irmovl Stack, %ebp  	# Set up base pointer
+	jmp Main		# Execute main program
+
+# Array of 3 elements
+	.align 4
+ele1:
+	.long 0x00a
+	.long ele2
+ele2:
+	.long 0x0b0
+	.long ele3
+ele3:
+	.long 0xc00
+	.long 0
+
+Main:	
+	irmovl ele1,%edx
+	pushl %edx      # Push ele1
+	call rSum	
+	halt
+
+/* $begin rsum-ys */
+	# int rsum_list(list_ptr ls)
+rSum:	pushl %ebp
+	rrmovl %esp,%ebp
+	pushl %ebx           # Save value of %ebx
+	mrmovl 8(%ebp),%ebx  # Get ele address
+	andl %ebx,%ebx	     # check NULL
+	jle L38
+	mrmovl 4(%ebx),%eax  # Get ele->next
+	pushl %eax	     # Push ele->next
+	call rSum            # rsum(ele->next)
+	mrmovl (%ebx),%edx   # Get ele->val
+	addl %edx,%eax       # Add ele->val
+	jmp L39              # goto done
+L38:	xorl %eax,%eax       # zreturn:
+L39:	mrmovl -4(%ebp),%ebx # done: Restore %ebx
+	rrmovl %ebp,%esp     # Deallocate stack frame
+	popl %ebp            # Restore %ebp
+	ret
+/* $end rsum-ys */
+	.pos 0x400
+Stack:	# The stack goes here

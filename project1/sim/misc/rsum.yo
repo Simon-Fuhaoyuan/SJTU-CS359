@@ -1,0 +1,48 @@
+                      | # rsum function
+                      | # Haoyuan Fu 517021910753
+                      | # Execution begins at address 0
+  0x000:              | 	.pos 0
+  0x000: 30f400040000 | init:	irmovl Stack, %esp  	# Set up Stack pointer
+  0x006: 30f500040000 | 	irmovl Stack, %ebp  	# Set up base pointer
+  0x00c: 702c000000   | 	jmp Main		# Execute main program
+                      | 
+                      | # Array of 3 elements
+  0x014:              | 	.align 4
+  0x014:              | ele1:
+  0x014: 0a000000     | 	.long 0x00a
+  0x018: 1c000000     | 	.long ele2
+  0x01c:              | ele2:
+  0x01c: b0000000     | 	.long 0x0b0
+  0x020: 24000000     | 	.long ele3
+  0x024:              | ele3:
+  0x024: 000c0000     | 	.long 0xc00
+  0x028: 00000000     | 	.long 0
+                      | 
+  0x02c:              | Main:	
+  0x02c: 30f214000000 | 	irmovl ele1,%edx
+  0x032: a02f         | 	pushl %edx      # Push ele1
+  0x034: 803a000000   | 	call rSum	
+  0x039: 00           | 	halt
+                      | 
+                      | /* $begin rsum-ys */
+                      | 	# int rsum_list(list_ptr ls)
+  0x03a: a05f         | rSum:	pushl %ebp
+  0x03c: 2045         | 	rrmovl %esp,%ebp
+  0x03e: a03f         | 	pushl %ebx           # Save value of %ebx
+  0x040: 503508000000 | 	mrmovl 8(%ebp),%ebx  # Get ele address
+  0x046: 6233         | 	andl %ebx,%ebx	     # check NULL
+  0x048: 7167000000   | 	jle L38
+  0x04d: 500304000000 | 	mrmovl 4(%ebx),%eax  # Get ele->next
+  0x053: a00f         | 	pushl %eax	     # Push ele->next
+  0x055: 803a000000   | 	call rSum            # rsum(ele->next)
+  0x05a: 502300000000 | 	mrmovl (%ebx),%edx   # Get ele->val
+  0x060: 6020         | 	addl %edx,%eax       # Add ele->val
+  0x062: 7069000000   | 	jmp L39              # goto done
+  0x067: 6300         | L38:	xorl %eax,%eax       # zreturn:
+  0x069: 5035fcffffff | L39:	mrmovl -4(%ebp),%ebx # done: Restore %ebx
+  0x06f: 2054         | 	rrmovl %ebp,%esp     # Deallocate stack frame
+  0x071: b05f         | 	popl %ebp            # Restore %ebp
+  0x073: 90           | 	ret
+                      | /* $end rsum-ys */
+  0x400:              | 	.pos 0x400
+  0x400:              | Stack:	# The stack goes here

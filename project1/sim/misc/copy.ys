@@ -1,0 +1,56 @@
+# copy function
+# Haoyuan Fu 517021910753
+# Execution begins at address 0
+	.pos 0
+init:	irmovl Stack, %esp  	# Set up Stack pointer
+	irmovl Stack, %ebp  	# Set up base pointer
+	jmp Main		# Execute main program
+
+	.align 4
+# Source block
+src:
+	.long 0x00a
+	.long 0x0b0
+	.long 0xc00
+
+# Destination block
+dest:
+	.long 0x111
+	.long 0x222
+	.long 0x333
+
+Main:	irmovl $3,%eax
+	pushl %eax	# Push len(3)
+	irmovl src,%edx
+	pushl %edx      # Push src
+	irmovl dest,%edx
+	pushl %edx	# Push dest
+	call copy_block	# call copy_block(int *src, int *dest, int len)
+	halt
+
+/* $begin copy_block */
+	# int copy_block(int *src, int *dest, int len)
+copy_block:
+	pushl %ebp
+	rrmovl %esp,%ebp
+	pushl %ebx           # Save value of %ebx
+	mrmovl 8(%ebp),%edx  # Get dest
+	mrmovl 12(%ebp),%ecx # Get src
+	mrmovl 16(%ebp),%ebx # Get len
+	xorl %eax,%eax       # Set result = 0
+Loop:	andl %ebx,%ebx       # Test value of len
+	jle End              # If <= 0, goto End
+	iaddl $-1,%ebx       # len--
+	mrmovl (%ecx),%edi   # val = *src
+	rmmovl %edi,(%edx)   # *dest = val
+	iaddl $4, %ecx	     # src++
+	iaddl $4, %edx       # dest++
+	xorl %edi,%eax       # result ^= val
+	jmp Loop             # goto Loop
+End:	mrmovl -4(%ebp),%ebx # done: Restore %ebx
+	rrmovl %ebp,%esp     # Deallocate stack frame
+	popl %ebp            # Restore %ebp0
+	ret
+/* $end copy_block */
+	.pos 0x400
+Stack:	# The stack goes here
